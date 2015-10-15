@@ -15,7 +15,7 @@ dev.off()
 mean_steps <- mean(total_steps_per_day$steps)
 median_steps <- median(total_steps_per_day$steps)
 #TODO: FIXME
-print(paste("Mean: ", mean_steps, "\nMedian: ", median_steps, sep=""))
+print(paste("Mean: ", mean_steps, " Median: ", median_steps, sep=""))
 
 
 ##########################################################################
@@ -27,16 +27,37 @@ dev.off()
 
 
 #TODO: FIXME
-print(time_data[which(time_data$steps == max(time_data$steps),arr.ind=TRUE),1])
+#print(time_data[which(time_data$steps == max(time_data$steps),arr.ind=TRUE),1])
 
 ###########################################################################
 
 num_NA <- nrow(mdata) - nrow(clean_mdata)
 
-NA_rows <- which(mdata$steps == NA, arr.ind=TRUE)
+NA_rows <- which(is.na(mdata$steps), arr.ind=TRUE)
 
 mdata_no_NA <- mdata
+mdata_no_NA$interval <- as.numeric(mdata_no_NA$interval)
 
 for(i in NA_rows) {
-	mdata_no_NA[i,
+	mdata_no_NA[i,1] <- time_data[which(time_data$interval == mdata_no_NA[i,3], arr.ind=TRUE),2]
 }
+
+#print(nrow(mdata_no_NA) - nrow(mdata))
+
+total_steps_per_day <- with(mdata_no_NA, aggregate(steps ~ date, FUN = sum))
+png("./out/Mean_tot_per_day_no_NA.png",height = 500, width=500)
+hist(x = total_steps_per_day$steps, xlab="Number of steps", ylab="Frequency",ylim=c(0,30),main="Histogram of steps per day")
+dev.off()
+
+mean_steps <- mean(total_steps_per_day$steps)
+median_steps <- median(total_steps_per_day$steps)
+#TODO: FIXME
+print(paste("Mean: ", mean_steps, " Median: ", median_steps, sep=""))
+
+#############################################################################
+
+mdata_no_NA$date <- as.Date(mdata_no_NA$date)
+mdata_no_NA$day <- weekdays(mdata_no_NA$date)
+mdata_no_NA$day_type <- as.factor(ifelse(mdata_no_NA$day %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
+#TODO: FINISH THIS
+
