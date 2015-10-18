@@ -46,7 +46,7 @@ for(i in NA_rows) {
 
 total_steps_per_day <- with(mdata_no_NA, aggregate(steps ~ date, FUN = sum))
 png("./out/Mean_tot_per_day_no_NA.png",height = 500, width=500)
-hist(x = total_steps_per_day$steps, xlab="Number of steps", ylab="Frequency",ylim=c(0,30),main="Histogram of steps per day")
+hist(x = total_steps_per_day$steps, xlab="Number of steps", ylab="Frequency",ylim=c(0, 40),main="Histogram of steps per day")
 dev.off()
 
 mean_steps <- mean(total_steps_per_day$steps)
@@ -60,4 +60,11 @@ mdata_no_NA$date <- as.Date(mdata_no_NA$date)
 mdata_no_NA$day <- weekdays(mdata_no_NA$date)
 mdata_no_NA$day_type <- as.factor(ifelse(mdata_no_NA$day %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
 #TODO: FINISH THIS
+data <- with(mdata_no_NA, aggregate(steps ~ interval + day_type, FUN=mean))
+png("./out/Activity_patterns.png", width=500, height =500)
 
+mplot <- ggplot(data, aes(interval, steps)) + geom_point(size=0) + geom_line() + facet_grid(day_type ~ .)
+print(mplot)
+dev.off()
+
+print("Done")
